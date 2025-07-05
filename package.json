@@ -16,6 +16,7 @@
     "@tanstack/react-table": "^8.21.2",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
+    "firebase": "^11.9.1",
     "i18next": "^23.15.1",
     "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
@@ -43,6 +44,6 @@
     "globals": "^15.9.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^7.0.0"
   }
 }

@@ -8,17 +8,13 @@ import { useErrorHandler } from "./hooks";
 import { AppError } from "./types";
 import { Spinner } from "./components/ui";
 import {
-  PublicEChat,
   Login,
   Register,
   Admin,
-  ChatBox,
-  PrivateChat,
 } from "./modules";
 import { Role } from "./enums";
 import DashBoard from "./modules/admin/DashBoard";
 import { Path } from "./constants";
-import { Question } from "./modules/question";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -45,7 +41,7 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (document.cookie) {
       localStorage.setItem("accessToken", document.cookie.split("=")[1]);
-      console.log("local",document.cookie)
+      console.log("local", document.cookie)
       setAccessToken(document.cookie.split("=")[1]);
     }
   }, [document.cookie]);
@@ -163,30 +159,8 @@ function Router() {
           </AuthenticatedRoute>
         }
       >
-        <Route index element={<DashBoard/>}/>
-        <Route path={Path.Admin.children.dashBoard} element={<DashBoard/>}/>
-        <Route path={Path.Admin.children.question} element={<Question/>}/>
-      </Route>
-      <Route
-        path={Path["Public"]}
-        element={
-          <UnauthenticatedRoute>
-            <PublicEChat />
-          </UnauthenticatedRoute>
-        }
-      />
-      <Route
-        path={Path["Root"]}
-        element={
-          <AuthenticatedRoute>
-            <PrivateChat />
-          </AuthenticatedRoute>
-        }
-      >
-        <Route
-          path={`${Path["Conversation"]}/:conversationId`}
-          element={<ChatBox />}
-        />
+        <Route index element={<DashBoard />} />
+        <Route path={Path.Admin.children.dashBoard} element={<DashBoard />} />
       </Route>
       <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
       <Route path="*" element={<PageNotFound />} />
