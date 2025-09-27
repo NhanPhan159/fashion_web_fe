@@ -15,4 +15,4 @@ function App() {
   );
 }
 
-export default withAlertMessage(App);
+export default App;
