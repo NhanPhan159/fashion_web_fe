@@ -1,3 +1,4 @@
 import { Login, Register } from "./auth";
 import { Admin } from "./admin";
-export { Login, Register, Admin };
+import {ShowcasePage} from "./showcase"
+export { Login, Register, Admin, ShowcasePage };

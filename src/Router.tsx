@@ -7,7 +7,7 @@ import { useErrorHandler } from "./hooks";
 import { AppError } from "./types";
 import { Role } from "./enums";
 import { Path } from "./constants";
-import { Admin,Login, Register } from "./modules";
+import { Admin,Login, Register, ShowcasePage } from "./modules";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -130,12 +130,14 @@ function Router() {
   // }, []);
 
   return (
+    <div>
+     Header 
     <Routes>
       <Route
-        path={Path["Login"]}
+        path={Path["Root"]}
         element={
           <UnauthenticatedRoute>
-            <Login />
+            <ShowcasePage />
           </UnauthenticatedRoute>
         }
       />
@@ -163,6 +165,8 @@ function Router() {
       <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+     Footer 
+    </div>
   );
 }
 
