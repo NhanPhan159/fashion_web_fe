@@ -7,7 +7,7 @@ import { useErrorHandler } from "./hooks";
 import { AppError } from "./types";
 import { Role } from "./enums";
 import { Path } from "./constants";
-import { Admin,Login, Register, ShowcasePage } from "./modules";
+import { Admin, Login, Register, ShowcasePage } from "./modules";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -18,13 +18,13 @@ const parseJwt = (accessToken: string) => {
 };
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
-//   const {
-//     value: { currentUser },
-//     actions: { clearStore, fetchCurrentUser },
-//   } = useGlobalStore();
+  //   const {
+  //     value: { currentUser },
+  //     actions: { clearStore, fetchCurrentUser },
+  //   } = useGlobalStore();
   const currentUser = null
-  const fetchCurrentUser = ()=>{}
-  const clearStore = ()=>{}
+  const fetchCurrentUser = () => { }
+  const clearStore = () => { }
 
   const location = useLocation();
   const { handleError } = useErrorHandler();
@@ -104,10 +104,10 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AuthorizedRoute = ({ children }: { children: React.ReactNode }) => {
-//   const {
-//     value: { currentUser },
-//   } = useGlobalStore();
-const currentUser = null
+  //   const {
+  //     value: { currentUser },
+  //   } = useGlobalStore();
+  const currentUser = null
 
   if (!currentUser) {
     return <Navigate to={Path["Login"]} replace />;
@@ -131,41 +131,51 @@ function Router() {
 
   return (
     <div>
-     Header 
-    <Routes>
-      <Route
-        path={Path["Root"]}
-        element={
-          <UnauthenticatedRoute>
-            <ShowcasePage />
-          </UnauthenticatedRoute>
-        }
-      />
-      <Route
-        path={Path["Register"]}
-        element={
-          <UnauthenticatedRoute>
-            <Register />
-          </UnauthenticatedRoute>
-        }
-      />
-      <Route
-        path={Path["Admin"].index}
-        element={
-          <AuthenticatedRoute>
-            <AuthorizedRoute>
+      Header
+      <Routes>
+        <Route
+          path={Path["Root"]}
+          element={
+            <UnauthenticatedRoute>
+              <ShowcasePage />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path={Path["Register"]}
+          element={
+            <UnauthenticatedRoute>
+              <Register />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path={Path["Login"]}
+          element={
+            <UnauthenticatedRoute>
+              <Login />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path={Path["Admin"].index}
+          element={
+            // <AuthenticatedRoute>
+            // <AuthorizedRoute>
+            <UnauthenticatedRoute>
               <Admin />
-            </AuthorizedRoute>
-          </AuthenticatedRoute>
-        }
-      >
-        <Route index element={<div />} />
-        <Route path={Path.Admin.children.dashBoard} element={<div />} />
-      </Route>
-      <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
-     Footer 
+            </UnauthenticatedRoute>
+            // </AuthorizedRoute>
+            // </AuthenticatedRoute>
+          }
+        >
+          <Route index element={<div />} />
+          <Route path={Path.Admin.children.dashBoard} element={<div />} />
+        </Route>
+        <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+      Footer
     </div>
   );
 }
