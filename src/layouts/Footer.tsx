@@ -3,8 +3,8 @@ import { Facebook, Heart, Instagram, Twitter } from "lucide-react";
 
 const Footer = () => {
   return (
-    <div className="px-20 pt-20 pb-10">
-      <div className="grid grid-cols-4 gap-2 mb-6">
+    <div className="px-20 pt-16 pb-8">
+      <div className="grid grid-cols-4 gap-2 mb-10">
         <div className="col-span-1">
           <h2 className="uppercase mb-4">Conntect</h2>
           <div className="flex gap-3">

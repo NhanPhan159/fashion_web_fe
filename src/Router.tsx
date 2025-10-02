@@ -8,8 +8,7 @@ import { AppError } from "./types";
 import { Role } from "./enums";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
-import Header from "./layouts/Header";
-import Footer from "./layouts/Footer";
+import { Footer, Header } from "./layouts";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -106,6 +105,7 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
     <div>
       <Header />
       {children}
+      <Footer />
     </div>
   );
 };
@@ -171,7 +171,6 @@ function Router() {
         <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-      <Footer />
     </div>
   );
 }
