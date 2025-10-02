@@ -9,6 +9,7 @@ import { Role } from "./enums";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
 import Header from "./layouts/Header";
+import Footer from "./layouts/Footer";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -170,7 +171,7 @@ function Router() {
         <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-      Footer
+      <Footer />
     </div>
   );
 }

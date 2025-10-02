@@ -84,10 +84,10 @@ const Header = () => {
     <div
       ref={headerRef}
       id="header"
-      className="pt-6 z-[100] sticky top-0 px-6 bg-orange-100 grid grid-cols-3 gap-6 w-full auto-rows-[1fr]"
+      className="pt-6 z-[100] sticky top-0 px-6 bg-[#f9f2ed] grid grid-cols-4 gap-6 w-full auto-rows-[1fr] border-[1px] border-solid border-l-gray-400"
     >
       <img src={logo} className="w-[30%] h-14 justify-center" alt="" />
-      <div className="flex gap-6 justify-center">
+      <div className="flex gap-6 justify-center col-span-2">
         {dumpData.map((curr, key) => (
           <div
             key={key}
