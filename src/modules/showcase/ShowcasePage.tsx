@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/carousel";
 import { TPreviewClothingPiece } from "@/types/clothes";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import PreviewPieceOfCothing from "@/components/ui/PreviewPieceOfClothing";
+import { useNavigate } from "react-router-dom";
+import { Path } from "@/constants";
 
 const dumpData: TPreviewClothingPiece[] = [
   {
@@ -89,6 +92,8 @@ const ShowcasePage = () => {
   const video = useRef<HTMLVideoElement>(document.createElement("video"));
   const [api, setApi] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
+  const navigator = useNavigate()
+  
   return (
     <div>
       <video
@@ -123,6 +128,7 @@ const ShowcasePage = () => {
           <ButtonShowcase
             text={"Shop Woman"}
             className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
+            onClick = {()=>navigator(Path["Clothes"])}
           />
         </div>
 
@@ -131,6 +137,7 @@ const ShowcasePage = () => {
           <ButtonShowcase
             text={"Shop Men"}
             className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
+            onClick = {()=>navigator(Path["Clothes"])}
           />
         </div>
       </div>
@@ -142,7 +149,7 @@ const ShowcasePage = () => {
         <CarouselContent>
           {dumpData.map((curr) => (
             <CarouselItem key={curr.id} className="md:basis-1/2 lg:basis-1/3">
-              <PreviewPieceOfCothing {...curr} />
+              <PreviewPieceOfCothing data={curr} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -189,7 +196,7 @@ const ShowcasePage = () => {
         <CarouselContent>
           {dumpData.map((curr) => (
             <CarouselItem key={curr.id} className="md:basis-1/2 lg:basis-1/3">
-              <PreviewPieceOfCothing {...curr} />
+              <PreviewPieceOfCothing data={curr} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -226,57 +233,13 @@ const ShowcasePage = () => {
 };
 export default ShowcasePage;
 
-const ButtonShowcase: FC<{ text: string; className?: string }> = (props) => {
+const ButtonShowcase: FC<{ text: string; className?: string; onClick?: ()=>void }> = (props) => {
   const style =
     "mt-4 px-8 py-6 bg-transparent hover:bg-white hover:text-black rounded-none border-2 border-solid border-white";
   return (
-    <Button variant={"default"} className={cn(style, props.className)}>
+    <Button variant={"default"} className={cn(style, props.className)} onClick={props.onClick}>
       {props.text}
     </Button>
   );
 };
 
-const PreviewPieceOfCothing: FC<TPreviewClothingPiece> = (props) => {
-  const [imgActive, setImgactive] = useState<string>(props.colors[0].img);
-  const [isHover, setHover] = useState<boolean>(false);
-  return (
-    <div className="flex flex-col items-center gap-4 ">
-      {imgActive === props.colors[0].img ? (
-        isHover ? (
-          <img
-            onMouseLeave={() => setHover(false)}
-            src={props.hoverImg}
-            alt=""
-          />
-        ) : (
-          <img onMouseEnter={() => setHover(true)} src={imgActive} alt="" />
-        )
-      ) : (
-        <img src={imgActive} alt="" />
-      )}
-      <p className="text-black">
-        <strong>{props.name}</strong>
-      </p>
-      <p className="text-black">${props.price}</p>
-      <div className="flex gap-4">
-        {props.colors.map((curr, index) => (
-          <div
-            style={{ background: curr.color }}
-            className={
-              "w-5 h-5 rounded-full cursor-pointer " +
-              (curr.img === imgActive
-                ? "border-2 border-solid border-gray-700"
-                : "")
-            }
-            key={index}
-            onClick={() =>
-              setImgactive(
-                props.colors.find((value) => value.color === curr.color)!.img
-              )
-            }
-          ></div>
-        ))}
-      </div>
-    </div>
-  );
-};
