@@ -15,7 +15,7 @@ export default function Admin() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [formData, setFormData] = useState({
         name: '',
-        category: 'nam',
+        category: 'men',
         price: '',
         stock: 0,
         description: '',
@@ -49,7 +49,7 @@ export default function Admin() {
             console.log("data", data)
             setProducts(data);
         } catch (err: unknown) {
-            setError((err as Error).message ?? 'Lỗi không xác định');
+            setError((err as Error).message ?? 'Unknown error');
         } finally {
             setLoading(false);
         }
@@ -70,7 +70,7 @@ export default function Admin() {
         e.preventDefault();
         if (isEdit && !selectedProduct) return;
         if (!isEdit && !selectedFile) {
-            setError('Vui lòng chọn ảnh sản phẩm!');
+            setError('Please select a product image!');
             return;
         }
         setUploading(true);
@@ -83,7 +83,7 @@ export default function Admin() {
 
             const productData = {
                 name: formData.name,
-                category: formData.category as 'nam' | 'nu',
+                category: formData.category as 'men' | 'women',
                 price: parseFloat(formData.price),
                 image_url: imageUrl,
                 stock: parseInt(formData.stock.toString()),
@@ -99,7 +99,7 @@ export default function Admin() {
             await fetchProducts();
             closeModal();
         } catch (err: unknown) {
-            setError((err as Error).message ?? 'Lỗi không xác định');
+            setError((err as Error).message ?? 'Unknown error');
         } finally {
             setUploading(false);
         }
@@ -119,7 +119,7 @@ export default function Admin() {
         } else {
             setIsEdit(false);
             setSelectedProduct(null);
-            setFormData({ name: '', category: 'nam', price: '', stock: 0, description: '' });
+            setFormData({ name: '', category: 'men', price: '', stock: 0, description: '' });
         }
         setShowModal(true);
     };
@@ -129,7 +129,7 @@ export default function Admin() {
         setIsEdit(false);
         setSelectedProduct(null);
         setSelectedFile(null);
-        setFormData({ name: '', category: 'nam', price: '', stock: 0, description: '' });
+        setFormData({ name: '', category: 'men', price: '', stock: 0, description: '' });
     };
 
     const handleEdit = (product: Product) => {
@@ -137,12 +137,12 @@ export default function Admin() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+        if (!window.confirm('Are you sure you want to delete this product?')) return;
         try {
             await productsService.delete(id);
             await fetchProducts();
         } catch (err: unknown) {
-            setError((err as Error).message ?? 'Lỗi không xác định');
+            setError((err as Error).message ?? 'Unknown error');
         }
     };
 
@@ -151,51 +151,48 @@ export default function Admin() {
         navigate('/auth/login');
     };
 
-    if (loading) return <div className="flex items-center justify-center min-h-screen">Đang tải...</div>;
-    if (!session) return null; // Redirect handled in checkAuth
+    if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    if (!session) return null;
 
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* Sidebar */}
             <div className="w-64 bg-white shadow-md">
                 <div className="p-4 border-b">
                     <h1 className="text-xl font-bold">Admin Dashboard</h1>
-                    <p className="text-sm text-gray-600">Chào {session.email}</p>
+                    <p className="text-sm text-gray-600">Welcome, {session.email}</p>
                 </div>
                 <nav className="mt-6 space-y-2 p-4">
                     <button onClick={() => navigate('/')} className="w-full flex items-center justify-start text-left p-2 hover:bg-gray-100 rounded">
-                        <ArrowLeft className="h-4 w-4 mr-2" /> Trang chủ
+                        <ArrowLeft className="h-4 w-4 mr-2" /> Home
                     </button>
                     <button onClick={() => openModal()} className="w-full flex items-center justify-start text-left p-2 hover:bg-gray-100 rounded">
-                        <Plus className="h-4 w-4 mr-2" /> Thêm sản phẩm
+                        <Plus className="h-4 w-4 mr-2" /> Add Product
                     </button>
                     <button className="w-full flex items-center justify-start text-left p-2 hover:bg-gray-100 rounded">
-                        <Edit className="h-4 w-4 mr-2" /> Quản lý (chọn để edit)
+                        <Edit className="h-4 w-4 mr-2" /> Manage (click to edit)
                     </button>
                     <button onClick={handleLogout} className="w-full flex items-center justify-start text-left p-2 hover:bg-gray-100 rounded text-red-600">
-                        <LogOut className="h-4 w-4 mr-2" /> Đăng xuất
+                        <LogOut className="h-4 w-4 mr-2" /> Logout
                     </button>
                 </nav>
             </div>
 
-            {/* Main Content */}
             <div className="flex-1 p-6 overflow-auto">
-                <h2 className="text-2xl font-bold mb-4">Quản lý Sản phẩm</h2>
+                <h2 className="text-2xl font-bold mb-4">Product Management</h2>
                 {error && <p className="text-red-600 mb-4 p-2 bg-red-50 rounded">{error}</p>}
 
-                {/* Simple Table */}
                 <div className="bg-white shadow-md rounded-lg overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá (VND)</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tồn kho</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ảnh</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price (VND)</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -204,7 +201,7 @@ export default function Admin() {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.id}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {product.category === 'nam' ? 'Nam' : 'Nữ'}
+                                        {product.category === 'men' ? 'Men' : 'Women'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.price.toLocaleString()}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.stock}</td>
@@ -225,24 +222,23 @@ export default function Admin() {
                         </tbody>
                     </table>
                     {products.length === 0 && (
-                        <p className="text-center py-8 text-gray-500">Chưa có sản phẩm nào. Thêm ngay!</p>
+                        <p className="text-center py-8 text-gray-500">No products yet. Add one now!</p>
                     )}
                 </div>
 
-                {/* Modal Overlay */}
                 {showModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
                             <div className="p-6">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-semibold">{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}</h3>
+                                    <h3 className="text-lg font-semibold">{isEdit ? 'Edit Product' : 'Add New Product'}</h3>
                                     <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
                                         <X className="h-5 w-5" />
                                     </button>
                                 </div>
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Tên sản phẩm</label>
+                                        <label className="block text-sm font-medium mb-1">Product Name</label>
                                         <input
                                             type="text"
                                             name="name"
@@ -253,19 +249,19 @@ export default function Admin() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Danh mục</label>
+                                        <label className="block text-sm font-medium mb-1">Category</label>
                                         <select
                                             name="category"
                                             value={formData.category}
                                             onChange={handleInputChange}
                                             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
-                                            <option value="nam">Nam</option>
-                                            <option value="nu">Nữ</option>
+                                            <option value="men">Men</option>
+                                            <option value="women">Women</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Giá (VND)</label>
+                                        <label className="block text-sm font-medium mb-1">Price (VND)</label>
                                         <input
                                             type="number"
                                             name="price"
@@ -276,7 +272,7 @@ export default function Admin() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Tồn kho</label>
+                                        <label className="block text-sm font-medium mb-1">Stock</label>
                                         <input
                                             type="number"
                                             name="stock"
@@ -287,18 +283,18 @@ export default function Admin() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Ảnh sản phẩm</label>
+                                        <label className="block text-sm font-medium mb-1">Product Image</label>
                                         <input
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
                                             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
-                                        {selectedFile && <p className="text-sm text-gray-600 mt-1">Đã chọn: {selectedFile.name}</p>}
-                                        {!isEdit && <p className="text-sm text-red-600">* Bắt buộc cho sản phẩm mới</p>}
+                                        {selectedFile && <p className="text-sm text-gray-600 mt-1">Selected: {selectedFile.name}</p>}
+                                        {!isEdit && <p className="text-sm text-red-600">* Required for new products</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Mô tả</label>
+                                        <label className="block text-sm font-medium mb-1">Description</label>
                                         <textarea
                                             name="description"
                                             value={formData.description}
@@ -313,14 +309,14 @@ export default function Admin() {
                                             disabled={uploading}
                                             className="flex-1 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
                                         >
-                                            {uploading ? 'Đang lưu...' : (isEdit ? 'Cập nhật' : 'Thêm')}
+                                            {uploading ? 'Saving...' : (isEdit ? 'Update' : 'Add')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={closeModal}
                                             className="flex-1 bg-gray-300 text-gray-700 p-2 rounded-md hover:bg-gray-400"
                                         >
-                                            Hủy
+                                            Cancel
                                         </button>
                                     </div>
                                 </form>

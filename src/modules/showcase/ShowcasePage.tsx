@@ -113,24 +113,24 @@ const ShowcasePage = () => {
         <ButtonShowcase text={"Discover the collecttion"} />
       </div>
 
-      <div className="w-ful flex gap-4 mt-8">
-        <div className="grow relative left-4">
+      <div className="w-full flex gap-4 mt-8">
+        <div className="grow relative">
           <img
             src={ShopWomanImg}
-            className=" h-full w-full object-fill"
+            className="h-full w-full object-cover"
             alt=""
           />
           <ButtonShowcase
             text={"Shop Woman"}
-            className={"absolute top-1/2 left-1/3 px-20 py-8 uppercase"}
+            className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
           />
         </div>
 
-        <div className="grow relative left-4">
-          <img src={ShopMenImg} className="h-full w-full object-fill" alt="" />
+        <div className="grow relative">
+          <img src={ShopMenImg} className="h-full w-full object-cover" alt="" />
           <ButtonShowcase
             text={"Shop Men"}
-            className={"absolute top-1/2 left-[40%] px-20 py-8 uppercase"}
+            className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
           />
         </div>
       </div>
@@ -226,7 +226,7 @@ const ShowcasePage = () => {
 };
 export default ShowcasePage;
 
-const ButtonShowcase: FC<{ text: String; className?: String }> = (props) => {
+const ButtonShowcase: FC<{ text: string; className?: string }> = (props) => {
   const style =
     "mt-4 px-8 py-6 bg-transparent hover:bg-white hover:text-black rounded-none border-2 border-solid border-white";
   return (

@@ -1,9 +1,10 @@
 import React, { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { authService } from '@/services/auth';
 
 function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -23,8 +24,17 @@ function Login() {
             return;
         }
 
-        // Nếu thành công, navigate đến admin
-        navigate("/admin");
+        const session = await authService.getSession();
+        const userRole = session?.user_metadata?.role as string || '';
+        if (userRole !== 'admin') {
+            setMessage('Access denied. Admin role required.');
+            await authService.signOut();
+            setLoading(false);
+            return;
+        }
+
+        const from = location.state?.from?.pathname || '/admin';
+        navigate(from, { replace: true });
     };
 
     const handleOAuth = async (provider: 'google' | 'azure') => {
@@ -34,9 +44,21 @@ function Login() {
         const { error } = await method();
         if (error) {
             setMessage(error.message);
+            setLoading(false);
+            return;
         }
-        // Redirect tự động nếu không error
-        setLoading(false);
+
+        const session = await authService.getSession();
+        const userRole = session?.user_metadata?.role as string || '';
+        if (userRole !== 'admin') {
+            setMessage('Access denied. Admin role required.');
+            await authService.signOut();
+            setLoading(false);
+            return;
+        }
+
+        const from = location.state?.from?.pathname || '/admin';
+        navigate(from, { replace: true });
     };
 
     return (
@@ -44,13 +66,13 @@ function Login() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
-                        {/* Icon hoặc logo */}
+                        {/* Icon or logo */}
                     </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Đăng nhập</h2>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign In</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Hoặc{" "}
+                        Or{" "}
                         <Link to="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
-                            tạo tài khoản mới
+                            create a new account
                         </Link>
                     </p>
                 </div>
@@ -74,12 +96,12 @@ function Login() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Mật khẩu"
+                                placeholder="Password"
                                 required
                                 disabled={loading}
                                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
@@ -93,7 +115,7 @@ function Login() {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                            {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </div>
 
@@ -102,7 +124,7 @@ function Login() {
                             <div className="w-full border-t border-gray-300" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-50 text-gray-500">Hoặc đăng nhập với</span>
+                            <span className="px-2 bg-gray-50 text-gray-500">Or sign in with</span>
                         </div>
                     </div>
 

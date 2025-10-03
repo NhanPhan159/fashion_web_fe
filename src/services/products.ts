@@ -3,7 +3,7 @@ import { supabase } from "@/utils/supabase";
 export interface Product {
   id: number;
   name: string;
-  category: "nam" | "nu";
+  category: "men" | "women";
   price: number;
   stock: number;
   description: string;

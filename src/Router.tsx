@@ -1,104 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { PageNotFound } from "./errors";
-import { hasPermission, i18n } from "./utils";
-import { useGlobalStore } from "./store";
 import { useErrorHandler } from "./hooks";
 import { AppError } from "./types";
-import { Role } from "./enums";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
 import { Footer, Header } from "./layouts";
-
-const parseJwt = (accessToken: string) => {
-  try {
-    return JSON.parse(atob(accessToken.split(".")[1]));
-  } catch (e) {
-    return <></>;
-  }
-};
+import { authService } from '@/services/auth';
+import { User } from '@supabase/supabase-js';
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
-  //   const {
-  //     value: { currentUser },
-  //     actions: { clearStore, fetchCurrentUser },
-  //   } = useGlobalStore();
-  const currentUser = null;
-  const fetchCurrentUser = () => {};
-  const clearStore = () => {};
-
-  const location = useLocation();
-  const { handleError } = useErrorHandler();
-  const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("accessToken") || ""
-  );
-  const [isAccessTokenExpired, setIsAccessTokenExpired] = useState(false);
+  const [session, setSession] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AppError | null>(null);
-  const [fetchingCurrentUser, setFetchingCurrentUser] = useState(true);
+  const { handleError } = useErrorHandler();
+  const location = useLocation();
 
   useEffect(() => {
-    if (document.cookie) {
-      localStorage.setItem("accessToken", document.cookie.split("=")[1]);
-      console.log("local", document.cookie);
-      setAccessToken(document.cookie.split("=")[1]);
-    }
-  }, [document.cookie]);
-
-  useEffect(() => {
-    const decodedJwt = parseJwt(accessToken);
-
-    if (!decodedJwt || decodedJwt.exp * 1000 < Date.now()) {
-      setIsAccessTokenExpired(true);
-    }
-  }, [accessToken, location]);
-
-  useEffect(() => {
-    (async () => {
-      if (accessToken && !currentUser) {
-        try {
-          await fetchCurrentUser();
-        } catch (error) {
-          setError(error as AppError);
-        } finally {
-          setFetchingCurrentUser(false);
-        }
-      } else {
-        setFetchingCurrentUser(false);
+    const checkSession = async () => {
+      try {
+        const userSession = await authService.getSession();
+        setSession(userSession);
+      } catch (err) {
+        setError(err as AppError);
+      } finally {
+        setLoading(false);
       }
-    })();
-  }, [accessToken, currentUser]);
+    };
 
-  useEffect(() => {
-    (async () => {
-      if (isAccessTokenExpired) {
-        localStorage.removeItem("accessToken");
-        clearStore();
-      }
-    })();
-  }, [isAccessTokenExpired]);
+    checkSession();
+  }, [location]);
 
-  if (fetchingCurrentUser) {
-    return <div>Loading</div>;
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (error) {
-    handleError(error);
-
-    return <Navigate to={Path["Login"]} replace />;
+  if (error || !session) {
+    handleError(error || { message: 'Authentication failed' } as AppError);
+    return <Navigate to={Path["Login"]} replace state={{ from: location }} />;
   }
 
-  if (!currentUser && !accessToken) {
-    return <Navigate to={Path["Public"]} replace />;
-  }
-
-  return children;
+  return <>{children}</>;
 };
 
 const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
-  const accessToken = localStorage.getItem("accessToken");
+  const [session, setSession] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (accessToken) {
-    return <Navigate to={Path["Root"]} replace />;
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const userSession = await authService.getSession();
+        setSession(userSession);
+      } catch {
+        // No session
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (session) {
+    return <Navigate to={Path["Admin"].index} replace />;
   }
 
   return (
@@ -111,31 +80,42 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AuthorizedRoute = ({ children }: { children: React.ReactNode }) => {
-  //   const {
-  //     value: { currentUser },
-  //   } = useGlobalStore();
-  const currentUser = null;
+  const [session, setSession] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!currentUser) {
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const userSession = await authService.getSession();
+        setSession(userSession);
+      } catch {
+        // No session
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (!session) {
     return <Navigate to={Path["Login"]} replace />;
   }
 
-  // if (!hasPermission([currentUser.role as Role], [Role.Admin])) {
-  //   return <Navigate to={Path["PermissionDenied"]} replace />;
-  // }
+  const userRole = session.user_metadata?.role as string || '';
+  if (userRole !== 'admin') {
+    authService.signOut().catch(console.error);
+    return <Navigate to={Path["Login"]} replace state={{ error: 'Access denied. Admin role required.' }} />;
+  }
 
-  return children;
+  return <>{children}</>;
 };
 
 function Router() {
-  // useEffect(() => {
-  //   const loadLanguage = async () => {
-  //     await i18n.changeLanguage("en-US");
-  //   };
-
-  //   loadLanguage();
-  // }, []);
-
   return (
     <div>
       <Routes>
@@ -144,6 +124,14 @@ function Router() {
           element={
             <UnauthenticatedRoute>
               <ShowcasePage />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path={Path["Login"]}
+          element={
+            <UnauthenticatedRoute>
+              <Login />
             </UnauthenticatedRoute>
           }
         />

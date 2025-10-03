@@ -7,8 +7,16 @@ export interface AuthResponse {
 }
 
 export const authService = {
-  signUp: async (email: string, password: string): Promise<AuthResponse> => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+  signUp: async (
+    email: string,
+    password: string,
+    options?: { data?: any }
+  ): Promise<AuthResponse> => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options,
+    });
     return { user: data.user, error: error ? new Error(error.message) : null };
   },
 
