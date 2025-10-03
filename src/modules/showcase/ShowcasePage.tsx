@@ -194,7 +194,7 @@ const ShowcasePage = () => {
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="mb-20 mt-4 flex gap-4 items-center justify-center">
+      <div className="mb-16 mt-10 flex gap-4 items-center justify-center">
         <ArrowLeft onClick={() => api2?.scrollPrev()} />
         <ArrowRight onClick={() => api2?.scrollNext()} />
       </div>

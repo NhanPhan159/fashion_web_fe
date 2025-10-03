@@ -8,6 +8,7 @@ import { AppError } from "./types";
 import { Role } from "./enums";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
+import { Footer, Header } from "./layouts";
 
 const parseJwt = (accessToken: string) => {
   try {
@@ -22,14 +23,14 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   //     value: { currentUser },
   //     actions: { clearStore, fetchCurrentUser },
   //   } = useGlobalStore();
-  const currentUser = null
-  const fetchCurrentUser = () => { }
-  const clearStore = () => { }
+  const currentUser = null;
+  const fetchCurrentUser = () => {};
+  const clearStore = () => {};
 
   const location = useLocation();
   const { handleError } = useErrorHandler();
   const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("accessToken") || "",
+    localStorage.getItem("accessToken") || ""
   );
   const [isAccessTokenExpired, setIsAccessTokenExpired] = useState(false);
   const [error, setError] = useState<AppError | null>(null);
@@ -38,7 +39,7 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (document.cookie) {
       localStorage.setItem("accessToken", document.cookie.split("=")[1]);
-      console.log("local", document.cookie)
+      console.log("local", document.cookie);
       setAccessToken(document.cookie.split("=")[1]);
     }
   }, [document.cookie]);
@@ -100,14 +101,20 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to={Path["Root"]} replace />;
   }
 
-  return children;
+  return (
+    <div>
+      <Header />
+      {children}
+      <Footer />
+    </div>
+  );
 };
 
 const AuthorizedRoute = ({ children }: { children: React.ReactNode }) => {
   //   const {
   //     value: { currentUser },
   //   } = useGlobalStore();
-  const currentUser = null
+  const currentUser = null;
 
   if (!currentUser) {
     return <Navigate to={Path["Login"]} replace />;
@@ -131,7 +138,6 @@ function Router() {
 
   return (
     <div>
-      Header
       <Routes>
         <Route
           path={Path["Root"]}
@@ -150,23 +156,13 @@ function Router() {
           }
         />
         <Route
-          path={Path["Login"]}
-          element={
-            <UnauthenticatedRoute>
-              <Login />
-            </UnauthenticatedRoute>
-          }
-        />
-        <Route
           path={Path["Admin"].index}
           element={
-            // <AuthenticatedRoute>
-            // <AuthorizedRoute>
-            <UnauthenticatedRoute>
-              <Admin />
-            </UnauthenticatedRoute>
-            // </AuthorizedRoute>
-            // </AuthenticatedRoute>
+            <AuthenticatedRoute>
+              <AuthorizedRoute>
+                <Admin />
+              </AuthorizedRoute>
+            </AuthenticatedRoute>
           }
         >
           <Route index element={<div />} />
@@ -175,7 +171,6 @@ function Router() {
         <Route path={Path["PageNotFound"]} element={<PageNotFound />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-      Footer
     </div>
   );
 }
