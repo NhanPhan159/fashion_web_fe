@@ -93,9 +93,9 @@ const ShowcasePage = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
   const navigator = useNavigate()
-  
+
   return (
-    <div>
+    <div >
       <video
         ref={video}
         className="w-full h-screen object-cover relative"
@@ -128,7 +128,7 @@ const ShowcasePage = () => {
           <ButtonShowcase
             text={"Shop Woman"}
             className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
-            onClick = {()=>navigator(Path["Clothes"])}
+            onClick={() => navigator(Path["Clothes"])}
           />
         </div>
 
@@ -137,7 +137,7 @@ const ShowcasePage = () => {
           <ButtonShowcase
             text={"Shop Men"}
             className={"absolute top-1/2 left-1/2 -translate-x-1/2 px-20 py-8 uppercase"}
-            onClick = {()=>navigator(Path["Clothes"])}
+            onClick={() => navigator(Path["Clothes"])}
           />
         </div>
       </div>
@@ -233,7 +233,7 @@ const ShowcasePage = () => {
 };
 export default ShowcasePage;
 
-const ButtonShowcase: FC<{ text: string; className?: string; onClick?: ()=>void }> = (props) => {
+const ButtonShowcase: FC<{ text: string; className?: string; onClick?: () => void }> = (props) => {
   const style =
     "mt-4 px-8 py-6 bg-transparent hover:bg-white hover:text-black rounded-none border-2 border-solid border-white";
   return (

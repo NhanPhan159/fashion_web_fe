@@ -6,9 +6,9 @@ import { AppError } from "./types";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
 import { Footer, Header } from "./layouts";
-import Clothes from "./modules/clothes/clothes";
 import { authService } from '@/services/auth';
 import { User } from '@supabase/supabase-js';
+import Clothes from "./modules/clothes/Clothes";
 
 const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<User | null>(null);
@@ -67,12 +67,8 @@ const UnauthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (session) {
-    return <Navigate to={Path["Admin"].index} replace />;
-  }
-
   return (
-    <div>
+    <div className="hide-scrollbar overflow-y-auto">
       <Header />
       {children}
       <Footer />
@@ -141,14 +137,6 @@ function Router() {
           element={
             <UnauthenticatedRoute>
               <Clothes />
-            </UnauthenticatedRoute>
-          }
-        />
-        <Route
-          path={Path["Register"]}
-          element={
-            <UnauthenticatedRoute>
-              <Register />
             </UnauthenticatedRoute>
           }
         />
