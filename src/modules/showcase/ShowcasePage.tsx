@@ -95,7 +95,7 @@ const ShowcasePage = () => {
   const navigator = useNavigate()
 
   return (
-    <div >
+    <div  className="overflow-hidden">
       <video
         ref={video}
         className="w-full h-screen object-cover relative"
