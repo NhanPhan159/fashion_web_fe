@@ -6,6 +6,7 @@ import { AppError } from "./types";
 import { Path } from "./constants";
 import { Admin, Login, Register, ShowcasePage } from "./modules";
 import { Footer, Header } from "./layouts";
+import Clothes from "./modules/clothes/clothes";
 import { authService } from '@/services/auth';
 import { User } from '@supabase/supabase-js';
 
@@ -132,6 +133,14 @@ function Router() {
           element={
             <UnauthenticatedRoute>
               <Login />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path={Path["Clothes"]}
+          element={
+            <UnauthenticatedRoute>
+              <Clothes />
             </UnauthenticatedRoute>
           }
         />

@@ -4,3 +4,4 @@ const config = {
   DEFAULT_DURATION: 5000,
 };
 export default config
+

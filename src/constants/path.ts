@@ -1,6 +1,6 @@
 export const Path = {
     Root: "/",
-    Public: "/public",
+    Clothes: "/clothes",
     Login: "/auth/login",
     Register: "/auth/register",
     Admin: {
